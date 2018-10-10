@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Generiranje web dizajna</title>
+<link rel="stylesheet" type="text/css"
+	th:href="@{/css/bootstrap.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+</head>
+<body style="overflow: hidden;">
+
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a th:href="@{/}" class="navbar-brand">Generiranje web dizajna</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li><a>Ocjena: </a></li>
+					<li><a href="#" class="grade">1</a></li>
+					<li><a href="#" class="grade">2</a></li>
+					<li><a href="#" class="grade">3</a></li>
+					<li><a href="#" class="grade">4</a></li>
+					<li><a href="#" class="grade">5</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#" id="download"><i class="fa fa-download" aria-hidden="true"></i> Preuzmi</a></li>
+					<li><a href="#" id="send"><i class="fa fa-envelope-o" aria-hidden="true"></i> Pošalji emailom</a></li>
+					<li><form th:action="@{/logout}" id="logout_form"
+							method="post" style="display: none;"></form> <a
+						href="javascript:{}"
+						onclick="document.getElementById('logout_form').submit(); return false;">
+							Odjava (<th:block th:text="${#authentication.name}"></th:block>)
+					</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div
+		style="position: fixed; top: 50px; bottom: 0px; left: 0px; right: 0px;">
+		<iframe id="designFrame" style="width: 100%; height: 100%; border: none;"
+			sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+			th:src="@{/newDesign}"></iframe>
+	</div>
+	<script th:src="@{js/jquery-3.2.1.min.js}"></script>
+    <script th:src="@{js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+    	/*<![CDATA[*/
+    	function handleGradeClick(event){
+    		event.preventDefault();
+    		getNewDesign($(event.target).text());
+    	};
+    	function getNewDesign(grade){
+    		var hash = $("#designFrame").contents().find("body").data("hash");
+    		if (hash != null)
+    			$("#designFrame").attr("src", "newDesign?grade=" + grade + "&hash=" + hash);
+    		else
+    			$("#designFrame").attr("src", "newDesign");
+    	};
+    	$(document).ready(function() {
+    		$(".grade").click(handleGradeClick);
+    		$("#send").click(function(event) {
+    			event.preventDefault();
+    			var hash = $("#designFrame").contents().find("body").data("hash");
+        		if (hash != null){
+        			$.ajax("send?hash=" + hash);
+        		}
+        			
+    		});
+    		$("#download").click(function(event) {
+    			var hash = $("#designFrame").contents().find("body").data("hash");
+        		if (hash != null)
+        			$("#download").attr("href", "download?hash=" + hash);
+        		else
+        			event.preventDefault();
+    		});
+    	});
+    	$(document).keypress(function(e) {
+		    if(e.which == 49 || e.which == 97) {
+		        getNewDesign(1);
+		    } else if (e.which == 50 || e.which == 98) {
+		    	getNewDesign(2);
+		    } else if (e.which == 51 || e.which == 99) {
+		    	getNewDesign(3);
+		    } else if (e.which == 52 || e.which == 100) {
+		    	getNewDesign(4);
+		    } else if (e.which == 53 || e.which == 101) {
+		    	getNewDesign(5);
+		    }
+		});
+    	/*]]>*/
+    </script>
+</body>
+</html>
